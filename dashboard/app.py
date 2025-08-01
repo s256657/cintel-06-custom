@@ -60,6 +60,12 @@ app_ui = ui.page_sidebar(
             ui.output_ui("average_bill"),
             showcase=ICONS["currency-dollar"],
         ),
+        ui.value_box(
+            "Highest tip", ui.output_ui("highest_tip"), showcase=ICONS["wallet"]
+        ),
+        ui.value_box(
+            "Lowest tip", ui.output_ui("lowest_tip"), showcase=ICONS["wallet"]
+        ),
         fill=False,
     ),
     ui.layout_columns(
@@ -106,7 +112,7 @@ app_ui = ui.page_sidebar(
         ),
         col_widths=[6, 6, 12],
     ),
-    title="Restaurant tipping",
+    title="Craig's Custom Restaurant Tipping Dashboard",
     fillable=True,
 )
 
@@ -137,6 +143,18 @@ def server(input, output, session):
         if d.shape[0] > 0:
             bill = d.total_bill.mean()
             return f"${bill:.2f}"
+        
+    @render.ui
+    def highest_tip():
+        d = tips_data()
+        if d.shape[0] > 0:
+            return f"${d.tip.max():.2f}"
+        
+    @render.ui
+    def lowest_tip():
+        d = tips_data()
+        if d.shape[0] > 0:
+            return f"${d.tip.min():.2f}"
 
     @render.data_frame
     def table():
